@@ -99,6 +99,9 @@ public class Search {
 		else if (Parameters.problemType.equals("OM")){
 				problem = new OneMax();
 		}
+                else if (Parameters.problemType.equals("IPDGoldbeck")){
+                                problem = new GoldbeckIPDFitnessFunction(member);
+                }
 		else System.out.println("Invalid Problem Type");
 
 		System.out.println(problem.name);
