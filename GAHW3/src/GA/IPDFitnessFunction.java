@@ -10,5 +10,7 @@
  * @author Chathika
  */
 public class IPDFitnessFunction extends FitnessFunction{
-    
+    public void doRawFitness(Chromo X){
+        
+    }
 }
