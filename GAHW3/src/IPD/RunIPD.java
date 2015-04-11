@@ -11,6 +11,7 @@ public class RunIPD extends Object
 
    public static void main(String args[])
       {
+          new StrategyHW3();
       int i;
       int maxSteps = 100;
 
