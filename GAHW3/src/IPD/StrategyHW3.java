@@ -42,13 +42,27 @@ public class StrategyHW3 extends Strategy {
         }
     }
     public int nextMove() {
-        int move=0;
-        
+        //refer lookup table for apporpriate move oldest move is on the left
+        String history = Integer.toString(opponentLastLastLastMove) + Integer.toString(myLastLastLastMove) + Integer.toString(opponentLastLastMove) + Integer.toString(myLastLastMove)
+                + Integer.toString(opponentLastMove) + Integer.toString(myLastMove);
+        int move = lookupTable.get(history);
+        //record history
         opponentLastLastLastMove = opponentLastLastMove;
         myLastLastLastMove = myLastLastMove;
         opponentLastLastMove = opponentLastMove;
         myLastLastMove = myLastMove;
         return move;
     }
-    
+    public void setLookUpTable (String Chromo){
+        for(int a = 0; a < 64; a++) {
+            lookupTable.put(possibleHistories[a], Integer.valueOf(Chromo.substring(a,a+1)));
+        }
+    }
+    public String generateChromo (){
+        String chromo = "";
+        for(int a = 0; a < 64; a++) {
+            chromo.concat(Integer.toString(lookupTable.get(possibleHistories[a])));
+        }
+        return chromo;
+    }
 }
