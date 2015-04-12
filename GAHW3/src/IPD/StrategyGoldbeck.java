@@ -18,8 +18,10 @@ public class StrategyGoldbeck extends Strategy {
     int myLastLastMove = (int)Math.round(Math.random());
     int opponentLastLastLastMove = (int)Math.round(Math.random());
     int myLastLastLastMove = (int)Math.round(Math.random());
+    int iteration = 0;
     
     public StrategyGoldbeck () {
+        name = "Goldbeck Strategy";
         //Randomly initialize strategy
         //Initialize possible moves 
         String possibleHistory = null;
@@ -30,13 +32,20 @@ public class StrategyGoldbeck extends Strategy {
                 }
             }
         }
-        //Randomly initialize values and add as key value pairs into lookup table
-        for(int i = 0; i < 64; i++) {
-            double r = Math.random();
-            lookupTable.put(possibleHistories[i], r<0.5?0:1);
-        }
+//        //Randomly initialize values and add as key value pairs into lookup table
+//        for(int i = 0; i < 64; i++) {
+//            double r = Math.random();
+//            lookupTable.put(possibleHistories[i], r<0.5?0:1);
+//        }
+        //Optimal Strategy
+        String optimalStrategy = "0101100001001110011110000100011001011101010110000000111101011101";
+        setLookUpTable(optimalStrategy);
+        
     }
     public int nextMove() {
+//        if (iteration < 3)
+//            return 0;
+//        iteration++;
         //refer lookup table for apporpriate move oldest move is on the left
         String history = Integer.toString(opponentLastLastLastMove) + Integer.toString(myLastLastLastMove) + Integer.toString(opponentLastLastMove) + Integer.toString(myLastLastMove)
                 + Integer.toString(opponentLastMove) + Integer.toString(myLastMove);

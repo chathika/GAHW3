@@ -13,13 +13,13 @@ import java.io.FileWriter;
  * @author Chathika
  */
 public class GoldbeckIPDFitnessFunction extends FitnessFunction{
-    private Chromo population[];
     
-    public GoldbeckIPDFitnessFunction(Chromo population[]) {
-        this.population = population; 
-    }
-    public void doRawFitness(Chromo X){
+    
+    public GoldbeckIPDFitnessFunction() {
         name = "IPD Goldbeck";
+    }
+    public void doRawFitness(Chromo X, Chromo pop[]){
+        
 
         //setup strategy
         StrategyGoldbeck myStrategy = new StrategyGoldbeck();
@@ -28,7 +28,7 @@ public class GoldbeckIPDFitnessFunction extends FitnessFunction{
         int rawFitness = 0;
         for(int i = 0; i < Parameters.popSize; i++ ){
             StrategyGoldbeck opponentStrategy = new StrategyGoldbeck();
-            opponentStrategy.setLookUpTable(X.chromo);
+            opponentStrategy.setLookUpTable(pop[i].chromo);
             IteratedPD ipd = new IteratedPD(myStrategy, opponentStrategy);
 
             ipd.runSteps(150);
@@ -36,6 +36,11 @@ public class GoldbeckIPDFitnessFunction extends FitnessFunction{
            // System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
            // System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
         }
+//        StrategyTitForTat opponentStrategy = new StrategyTitForTat();
+//            IteratedPD ipd = new IteratedPD(myStrategy, opponentStrategy);
+//
+//            ipd.runSteps(150);
+//            rawFitness += ipd.player1Score();
         //Final fitness is average score
         int finalFitness = rawFitness/Parameters.popSize;
         

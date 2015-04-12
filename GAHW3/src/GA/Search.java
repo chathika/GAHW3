@@ -100,7 +100,7 @@ public class Search {
 				problem = new OneMax();
 		}
                 else if (Parameters.problemType.equals("IPDGoldbeck")){
-                                problem = new GoldbeckIPDFitnessFunction(member);
+                                problem = new GoldbeckIPDFitnessFunction();
                 }
 		else System.out.println("Invalid Problem Type");
 
@@ -155,7 +155,13 @@ public class Search {
 					member[i].sclFitness = 0;
 					member[i].proFitness = 0;
 
-					problem.doRawFitness(member[i]);
+                                        //changed by Chathika for IPD
+                                        if(!Parameters.problemType.equalsIgnoreCase("IPDGoldbeck")) {
+                                            problem.doRawFitness(member[i]);
+                                        } else {
+                                            problem.doRawFitness(member[i],member);
+                                        }
+					
 
 					sumRawFitness = sumRawFitness + member[i].rawFitness;
 					sumRawFitness2 = sumRawFitness2 +
@@ -348,7 +354,9 @@ public class Search {
 
 				//	Swap Children with Last Generation
 				for (int i=0; i<Parameters.popSize; i++){
-					Chromo.copyB2A(member[i], child[i]);
+                                    /*Chathika: Elitism of top 10%*/
+                                    if(member[i].sclFitness<=Parameters.popSize-(Parameters.popSize/10))
+                                        Chromo.copyB2A(member[i], child[i]);
 				}
 
 			} //  Repeat the above loop for each generation
