@@ -6,8 +6,8 @@
 import java.io.*;
 import java.util.*;
 import java.text.*;
-
-public class Search {
+import java.awt.*;
+public class SearchNN {
 
 /*******************************************************************************
 *                           INSTANCE VARIABLES                                 *
@@ -17,18 +17,17 @@ public class Search {
 *                           STATIC VARIABLES                                   *
 *******************************************************************************/
 
-	public static FitnessFunction problem;
+	public static PrisonerDilemma problem;
+	public static Chromosome[] member;
+	public static Chromosome[] child;
 
-	public static Chromo[] member;
-	public static Chromo[] child;
-
-	public static Chromo bestOfGenChromo;
+	public static Chromosome bestOfGenChromosome;
 	public static int bestOfGenR;
 	public static int bestOfGenG;
-	public static Chromo bestOfRunChromo;
+	public static Chromosome bestOfRunChromosome;
 	public static int bestOfRunR;
 	public static int bestOfRunG;
-	public static Chromo bestOverAllChromo;
+	public static Chromosome bestOverAllChromosome;
 	public static int bestOverAllR;
 	public static int bestOverAllG;
 
@@ -54,37 +53,58 @@ public class Search {
 
 	private static double fitnessStats[][];  // 0=Avg, 1=Best
 
-/*******************************************************************************
-*                              CONSTRUCTORS                                    *
-*******************************************************************************/
-
-
-/*******************************************************************************
-*                             MEMBER METHODS                                   *
-*******************************************************************************/
-
-
-/*******************************************************************************
-*                             STATIC METHODS                                   *
-*******************************************************************************/
-
 	public static void main(String[] args) throws java.io.IOException{
 
-            
 		Calendar dateAndTime = Calendar.getInstance(); 
 		Date startTime = dateAndTime.getTime();
 
 	//  Read Parameter File
 		System.out.println("\nParameter File Name is: " + args[0] + "\n");
 		Parameters parmValues = new Parameters(args[0]);
-                if (Parameters.problemType.equalsIgnoreCase("PD")){
-                    SearchNN.main(args);
-                    return;
-                }
+
+/*
+Parameters.numRuns=2;
+Parameters.popSize=10;
+Parameters.generations=30;
+*/
+
+		int gameTimes=100;
+		int[] randomDecisions=new int[gameTimes];
+		for(int i=0;i<gameTimes;i++)
+		{
+			double rand=r.nextDouble();
+			if(rand>0.5) randomDecisions[i]=1;
+			else randomDecisions[i]=-1;
+		}
+	//  Store the Statistical Data To the Visualization Data Matrix
+		double[] generations=new double[Parameters.generations];
+		double[] bestBestFitness=new double[Parameters.generations];
+		double[] avgBestFitness=new double[Parameters.generations];
+		double[] avgAvgFitness=new double[Parameters.generations];
+		double[] avgStdDeviation=new double[Parameters.generations];
+		for(int i=0; i<Parameters.generations; i++)
+		{
+			generations[i]=i;
+			bestBestFitness[i]=0;
+			avgBestFitness[i]=0;
+			avgAvgFitness[i]=0;
+			avgStdDeviation[i]=0;
+		}
+
+	//  Hold the Global Statistical Data For Several Runs
+		double globalBestFitnessSum=0.0;
+		double globalBestFitnessSum2=0.0;
+		double globalAvgBestFitness=0.0;
+		double globalBestFitnessDeviation=0.0;
+
+		int[] firstGenThatGetMaxFitness=new int[Parameters.numRuns];
+		for(int i=0; i<Parameters.numRuns; i++)firstGenThatGetMaxFitness[i]=0;
+
+
 	//  Write Parameters To Summary Output File
 		String summaryFileName = Parameters.expID + "_summary.txt";
-		FileWriter summaryOutput = new FileWriter(summaryFileName);
-		parmValues.outputParameters(summaryOutput);
+	//	FileWriter summaryOutput = new FileWriter(summaryFileName);
+	//	parmValues.outputParameters(summaryOutput);
 
 	//	Set up Fitness Statistics matrix
 		fitnessStats = new double[2][Parameters.generations];
@@ -97,15 +117,9 @@ public class Search {
 	//	the appropriate class file (extending FitnessFunction.java) and add
 	//	an else_if block below to instantiate the problem.
  
-		if (Parameters.problemType.equals("NM")){
-				problem = new NumberMatch();
+		if (Parameters.problemType.equals("PD")){
+				problem = new PrisonerDilemma(randomDecisions);
 		}
-		else if (Parameters.problemType.equals("OM")){
-				problem = new OneMax();
-		}
-                else if (Parameters.problemType.equals("IPDGoldbeck")){
-                                problem = new GoldbeckIPDFitnessFunction();
-                }
 		else System.out.println("Invalid Problem Type");
 
 		System.out.println(problem.name);
@@ -114,11 +128,11 @@ public class Search {
 		r.setSeed(Parameters.seed);
 		memberIndex = new int[Parameters.popSize];
 		memberFitness = new double[Parameters.popSize];
-		member = new Chromo[Parameters.popSize];
-		child = new Chromo[Parameters.popSize];
-		bestOfGenChromo = new Chromo();
-		bestOfRunChromo = new Chromo();
-		bestOverAllChromo = new Chromo();
+		member = new Chromosome[Parameters.popSize];
+		child = new Chromosome[Parameters.popSize];
+		bestOfGenChromosome = new Chromosome();
+		bestOfRunChromosome = new Chromosome();
+		bestOverAllChromosome = new Chromosome();
 
 		if (Parameters.minORmax.equals("max")){
 			defaultBest = 0;
@@ -129,18 +143,18 @@ public class Search {
 			defaultWorst = 0;
 		}
 
-		bestOverAllChromo.rawFitness = defaultBest;
+		bestOverAllChromosome.rawFitness = defaultBest;
 
 		//  Start program for multiple runs
 		for (R = 1; R <= Parameters.numRuns; R++){
 
-			bestOfRunChromo.rawFitness = defaultBest;
+			bestOfRunChromosome.rawFitness = defaultBest;
 			System.out.println();
 
 			//	Initialize First Generation
 			for (int i=0; i<Parameters.popSize; i++){
-				member[i] = new Chromo();
-				child[i] = new Chromo();
+				member[i] = new Chromosome();
+				child[i] = new Chromosome();
 			}
 
 			//	Begin Each Run
@@ -150,7 +164,7 @@ public class Search {
 				sumSclFitness = 0;
 				sumRawFitness = 0;
 				sumRawFitness2 = 0;
-				bestOfGenChromo.rawFitness = defaultBest;
+				bestOfGenChromosome.rawFitness = defaultBest;
 
 				//	Test Fitness of Each Member
 				for (int i=0; i<Parameters.popSize; i++){
@@ -159,48 +173,42 @@ public class Search {
 					member[i].sclFitness = 0;
 					member[i].proFitness = 0;
 
-                                        //changed by Chathika for IPD
-                                        if(!Parameters.problemType.equalsIgnoreCase("IPDGoldbeck")) {
-                                            problem.doRawFitness(member[i]);
-                                        } else {
-                                            problem.doRawFitness(member[i],member);
-                                        }
-					
+					problem.doRawFitness(member[i]);
 
 					sumRawFitness = sumRawFitness + member[i].rawFitness;
 					sumRawFitness2 = sumRawFitness2 +
 						member[i].rawFitness * member[i].rawFitness;
 
 					if (Parameters.minORmax.equals("max")){
-						if (member[i].rawFitness > bestOfGenChromo.rawFitness){
-							Chromo.copyB2A(bestOfGenChromo, member[i]);
+						if (member[i].rawFitness > bestOfGenChromosome.rawFitness){
+							Chromosome.copyB2A(bestOfGenChromosome, member[i]);
 							bestOfGenR = R;
 							bestOfGenG = G;
 						}
-						if (member[i].rawFitness > bestOfRunChromo.rawFitness){
-							Chromo.copyB2A(bestOfRunChromo, member[i]);
+						if (member[i].rawFitness > bestOfRunChromosome.rawFitness){
+							Chromosome.copyB2A(bestOfRunChromosome, member[i]);
 							bestOfRunR = R;
 							bestOfRunG = G;
 						}
-						if (member[i].rawFitness > bestOverAllChromo.rawFitness){
-							Chromo.copyB2A(bestOverAllChromo, member[i]);
+						if (member[i].rawFitness > bestOverAllChromosome.rawFitness){
+							Chromosome.copyB2A(bestOverAllChromosome, member[i]);
 							bestOverAllR = R;
 							bestOverAllG = G;
 						}
 					}
 					else {
-						if (member[i].rawFitness < bestOfGenChromo.rawFitness){
-							Chromo.copyB2A(bestOfGenChromo, member[i]);
+						if (member[i].rawFitness < bestOfGenChromosome.rawFitness){
+							Chromosome.copyB2A(bestOfGenChromosome, member[i]);
 							bestOfGenR = R;
 							bestOfGenG = G;
 						}
-						if (member[i].rawFitness < bestOfRunChromo.rawFitness){
-							Chromo.copyB2A(bestOfRunChromo, member[i]);
+						if (member[i].rawFitness < bestOfRunChromosome.rawFitness){
+							Chromosome.copyB2A(bestOfRunChromosome, member[i]);
 							bestOfRunR = R;
 							bestOfRunG = G;
 						}
-						if (member[i].rawFitness < bestOverAllChromo.rawFitness){
-							Chromo.copyB2A(bestOverAllChromo, member[i]);
+						if (member[i].rawFitness < bestOverAllChromosome.rawFitness){
+							Chromosome.copyB2A(bestOverAllChromosome, member[i]);
 							bestOverAllR = R;
 							bestOverAllG = G;
 						}
@@ -209,7 +217,7 @@ public class Search {
 
 				// Accumulate fitness statistics
 				fitnessStats[0][G] += sumRawFitness / Parameters.popSize;
-				fitnessStats[1][G] += bestOfGenChromo.rawFitness;
+				fitnessStats[1][G] += bestOfGenChromosome.rawFitness;
 
 				averageRawFitness = sumRawFitness / Parameters.popSize;
 				stdevRawFitness = Math.sqrt(
@@ -220,17 +228,25 @@ public class Search {
 							);
 
 				// Output generation statistics to screen
-				System.out.println(R + "\t" + G +  "\t" + (int)bestOfGenChromo.rawFitness + "\t" + averageRawFitness + "\t" + stdevRawFitness);
+		//		System.out.println(R + "\t" + G +  "\t" + (int)bestOfGenChromosome.rawFitness + "\t" + averageRawFitness + "\t" + stdevRawFitness);
 
-				// Output generation statistics to summary file
+				// Calculate the generation statistics 
+				if(bestOfGenChromosome.rawFitness>bestBestFitness[G])
+				bestBestFitness[G]=bestOfGenChromosome.rawFitness;
+				avgBestFitness[G]+=bestOfGenChromosome.rawFitness;
+				avgAvgFitness[G]+=averageRawFitness;
+				avgStdDeviation[G]+=stdevRawFitness;
+
+				/* Output generation statistics to summary file 
 				summaryOutput.write(" R ");
 				Hwrite.right(R, 3, summaryOutput);
 				summaryOutput.write(" G ");
 				Hwrite.right(G, 3, summaryOutput);
-				Hwrite.right((int)bestOfGenChromo.rawFitness, 7, summaryOutput);
+				Hwrite.right((int)bestOfGenChromosome.rawFitness, 7, summaryOutput);
 				Hwrite.right(averageRawFitness, 11, 3, summaryOutput);
+
 				Hwrite.right(stdevRawFitness, 11, 3, summaryOutput);
-				summaryOutput.write("\n");
+				summaryOutput.write("\n");*/
 
 
 		// *********************************************************************
@@ -334,20 +350,20 @@ public class Search {
 				for (int i=0; i<Parameters.popSize; i=i+2){
 
 					//	Select Two Parents
-					parent1 = Chromo.selectParent();
+					parent1 = Chromosome.selectParent();
 					parent2 = parent1;
 					while (parent2 == parent1){
-						parent2 = Chromo.selectParent();
+						parent2 = Chromosome.selectParent();
 					}
 
 					//	Crossover Two Parents to Create Two Children
 					randnum = r.nextDouble();
 					if (randnum < Parameters.xoverRate){
-						Chromo.mateParents(parent1, parent2, member[parent1], member[parent2], child[i], child[i+1]);
+						Chromosome.mateParents(parent1, parent2, member[parent1], member[parent2], child[i], child[i+1]);
 					}
 					else {
-						Chromo.mateParents(parent1, member[parent1], child[i]);
-						Chromo.mateParents(parent2, member[parent2], child[i+1]);
+						Chromosome.mateParents(parent1, member[parent1], child[i]);
+						Chromosome.mateParents(parent2, member[parent2], child[i+1]);
 					}
 				} // End Crossover
 
@@ -358,25 +374,33 @@ public class Search {
 
 				//	Swap Children with Last Generation
 				for (int i=0; i<Parameters.popSize; i++){
-                                    /*Chathika: Elitism of top 10%*/
-                                    if(member[i].sclFitness<=Parameters.popSize-(Parameters.popSize/10))
-                                        Chromo.copyB2A(member[i], child[i]);
+					Chromosome.copyB2A(member[i], child[i]);
 				}
 
 			} //  Repeat the above loop for each generation
 
-			Hwrite.left(bestOfRunR, 4, summaryOutput);
-			Hwrite.right(bestOfRunG, 4, summaryOutput);
 
-			problem.doPrintGenes(bestOfRunChromo, summaryOutput);
 
-			System.out.println(R + "\t" + "B" + "\t"+ (int)bestOfRunChromo.rawFitness);
+//			Hwrite.left(bestOfRunR, 4, summaryOutput);
+//			Hwrite.right(bestOfRunG, 4, summaryOutput);
+
+//			problem.doPrintGenes(bestOfRunChromosome, summaryOutput);
+
+
+			// Print the Best Fitness in One Run
+			System.out.println("The "+R+ "th Run's Best Fitness is: " +(int)bestOfRunChromosome.rawFitness);
+
+			//Calculate Average Best Fitness And its Deviation Over Several Runs
+			globalBestFitnessSum+=bestOfRunChromosome.rawFitness;
+			globalBestFitnessSum2+=bestOfRunChromosome.rawFitness*bestOfRunChromosome.rawFitness;
+			firstGenThatGetMaxFitness[R-1]=bestOfRunG;
 
 		} //End of a Run
 
+/*
 		Hwrite.left("B", 8, summaryOutput);
 
-		problem.doPrintGenes(bestOverAllChromo, summaryOutput);
+		problem.doPrintGenes(bestOverAllChromosome, summaryOutput);
 
 		//	Output Fitness Statistics matrix
 		summaryOutput.write("Gen                 AvgFit              BestFit \n");
@@ -389,14 +413,68 @@ public class Search {
 
 		summaryOutput.write("\n");
 		summaryOutput.close();
-
+*/
 		System.out.println();
 		System.out.println("Start:  " + startTime);
 		dateAndTime = Calendar.getInstance(); 
 		Date endTime = dateAndTime.getTime();
 		System.out.println("End  :  " + endTime);
 
+		problem.doPrintGenes(bestOverAllChromosome);
+
+		globalAvgBestFitness=globalBestFitnessSum/Parameters.numRuns;
+		globalBestFitnessDeviation=Math.sqrt
+		(
+			Math.abs(globalBestFitnessSum2-globalBestFitnessSum*globalBestFitnessSum/Parameters.numRuns)
+			/
+			(Parameters.numRuns-1)
+		);
+
+		System.out.println("After the "+Parameters.numRuns+ "th Run, the Avg Best Fitness is: " +globalAvgBestFitness);
+		System.out.println("After the "+Parameters.numRuns+ "th Run, the Std Deviation is: " +globalBestFitnessDeviation);
+
+		double firstGenSum=0.0;
+		System.out.println("The first generation in which an optimum indv is found in each run are shown below respectively:");
+		for(int i=0; i<Parameters.numRuns; i++)
+		{
+			firstGenSum+=firstGenThatGetMaxFitness[i];
+			System.out.print(firstGenThatGetMaxFitness[i]+" ");
+		}
+		System.out.println("\nThe average of the first generation in which an optimum indv is found in each run is:"+(firstGenSum/Parameters.numRuns));
+
+		for(int i=0; i<Parameters.generations; i++)
+		{
+			avgBestFitness[i]/=Parameters.numRuns;
+			avgAvgFitness[i]/=Parameters.numRuns;
+			avgStdDeviation[i]/=Parameters.numRuns;
+		}
+		double[][] gen=new double[2][];
+		int[] dataLengths=new int[2];
+		boolean[] isColumns=new boolean[2];
+		for(int i=0;i<2;i++)
+		{
+			gen[i]=generations;
+			dataLengths[i]=gen[i].length;
+			isColumns[i]=false;
+		}
+		double[][] ave=new double[][]
+		{
+			avgAvgFitness,
+			avgStdDeviation
+		};
+		Color[] dataColors=new Color[]
+		{
+			Color.green,
+			Color.yellow
+		};
+		String[] dataLabels=new String[]
+		{
+			"avgAvgFitness",
+			"avgStdDeviation"
+		};
+		SearchFrame SearchFrame1=new SearchFrame(gen,ave,dataLengths,isColumns,dataColors,dataLabels,"Gen","Fitness");
+		SearchFrame1.setVisible(true);
+
 	} // End of Main Class
 
 }   // End of Search.Java ******************************************************
-

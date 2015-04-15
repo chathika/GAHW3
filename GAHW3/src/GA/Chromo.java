@@ -206,7 +206,24 @@ public class Chromo
 		case 2:     //  Two Point Crossover
 
 		case 3:     //  Uniform Crossover
-
+                        child1.chromo = "";
+                        child2.chromo = "";
+                        boolean crossover = false;
+                        for(int i = 0; i < Parameters.numGenes*Parameters.geneSize; i++) {
+                            if (Search.r.nextFloat() > 0.5) {
+                                crossover = true;
+                            } else {
+                                crossover = false;
+                            }
+                            if (crossover = true) {
+                                child1.chromo += parent2.chromo.charAt(i);
+                                child2.chromo += parent1.chromo.charAt(i);
+                            } else {
+                                child1.chromo += parent1.chromo.charAt(i);
+                                child2.chromo += parent2.chromo.charAt(i);
+                            }
+                        }
+                        break;
 		default:
 			System.out.println("ERROR - Bad crossover method selected");
 		}
