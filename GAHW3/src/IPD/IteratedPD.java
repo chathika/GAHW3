@@ -24,8 +24,9 @@ public class IteratedPD extends Object
       p1Score = 0;
       p2Score = 0;
 
-      System.out.printf(" Player 1 is %s, Player 2 is %s\n",
+/*     System.out.printf(" Player 1 is %s, Player 2 is %s\n",
            p1.getName(), p2.getName() );
+*/
       }  /* IteratedPD */
 
    public void runSteps(int maxSteps)

@@ -17,6 +17,8 @@ public class RunIPD extends Object
 
       Strategy player1, player2;
       IteratedPD ipd;
+      int wanwan = 0;
+      int golbeck = 0;
 
       for (i=0; i<args.length; i++)
          {
@@ -33,99 +35,115 @@ public class RunIPD extends Object
       ipd = new IteratedPD(player1, player2);
 
       ipd.runSteps(maxSteps);
-
-      System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
-      System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
+      wanwan += ipd.player2Score();
+      
+      System.out.printf("W Player 1 score = %d\t", ipd.player1Score());
+      System.out.printf("  Player 2 score = %d\n", ipd.player2Score());
 
       player1 = new StrategyAlwaysCooperate();
       player2 = new StrategyGoldbeck();
       ipd = new IteratedPD(player1, player2);
 
       ipd.runSteps(maxSteps);
-
-      System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
-      System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
+      golbeck += ipd.player2Score();
+      
+      System.out.printf("G Player 1 score = %d\t", ipd.player1Score());
+      System.out.printf("  Player 2 score = %d\n", ipd.player2Score());
 //////////////////////////// 
       player1 = new StrategyAlwaysDefect();
       player2 = new StrategyWanwanLi();
       ipd = new IteratedPD(player1, player2);
 
       ipd.runSteps(maxSteps);
-
-      System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
-      System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
+      wanwan += ipd.player2Score();
+      
+      System.out.printf("W Player 1 score = %d\t", ipd.player1Score());
+      System.out.printf("  Player 2 score = %d\n", ipd.player2Score());
 
       player1 = new StrategyAlwaysDefect();
       player2 = new StrategyGoldbeck();
       ipd = new IteratedPD(player1, player2);
 
       ipd.runSteps(maxSteps);
-
-      System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
-      System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
+      golbeck += ipd.player2Score();
+      
+      System.out.printf("G Player 1 score = %d\t", ipd.player1Score());
+      System.out.printf("  Player 2 score = %d\n", ipd.player2Score());
 ////////////////////////////
       player1 = new StrategyTitForTat();
       player2 = new StrategyWanwanLi();
       ipd = new IteratedPD(player1, player2);
 
       ipd.runSteps(maxSteps);
+      wanwan += ipd.player2Score();
 
-      System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
-      System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
+      System.out.printf("W Player 1 score = %d\t", ipd.player1Score());
+      System.out.printf("  Player 2 score = %d\n", ipd.player2Score());
 
       player1 = new StrategyTitForTat();
       player2 = new StrategyGoldbeck();
       ipd = new IteratedPD(player1, player2);
 
       ipd.runSteps(maxSteps);
-
-      System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
-      System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
+      golbeck += ipd.player2Score();
+      
+      System.out.printf("G Player 1 score = %d\t", ipd.player1Score());
+      System.out.printf("  Player 2 score = %d\n", ipd.player2Score());
 ///////////////////////////
       player1 = new StrategyTitForTwoTats();
       player2 = new StrategyWanwanLi();
       ipd = new IteratedPD(player1, player2);
 
       ipd.runSteps(maxSteps);
+      wanwan += ipd.player2Score();
 
-      System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
-      System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
+      System.out.printf("W Player 1 score = %d\t", ipd.player1Score());
+      System.out.printf("  Player 2 score = %d\n", ipd.player2Score());
 
       player1 = new StrategyTitForTwoTats();
       player2 = new StrategyGoldbeck();
       ipd = new IteratedPD(player1, player2);
 
       ipd.runSteps(maxSteps);
-
-      System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
-      System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
+      golbeck += ipd.player2Score();
+      
+      System.out.printf("G Player 1 score = %d\t", ipd.player1Score());
+      System.out.printf("  Player 2 score = %d\n", ipd.player2Score());
 ///////////////////////////
       player1 = new StrategyRandom();
       player2 = new StrategyWanwanLi();
       ipd = new IteratedPD(player1, player2);
 
       ipd.runSteps(maxSteps);
+      wanwan += ipd.player2Score();
 
-      System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
-      System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
+      System.out.printf("W Player 1 score = %d\t", ipd.player1Score());
+      System.out.printf("  Player 2 score = %d\n", ipd.player2Score());
 
       player1 = new StrategyRandom();
       player2 = new StrategyGoldbeck();
       ipd = new IteratedPD(player1, player2);
 
       ipd.runSteps(maxSteps);
-
-      System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
-      System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
+      golbeck += ipd.player2Score();
+      
+      System.out.printf("G Player 1 score = %d\t", ipd.player1Score());
+      System.out.printf("  Player 2 score = %d\n", ipd.player2Score());
 ///////////////////////////
       player1 = new StrategyGoldbeck();
       player2 = new StrategyWanwanLi();
       ipd = new IteratedPD(player1, player2);
-
+  
       ipd.runSteps(maxSteps);
-
-      System.out.printf(" Player 1 score = %d\n", ipd.player1Score());
+      wanwan += ipd.player2Score();
+      golbeck += ipd.player1Score();
+      
+      System.out.printf(" Player 1 score = %d\t", ipd.player1Score());
       System.out.printf(" Player 2 score = %d\n", ipd.player2Score());
+      
+      System.out.printf("WanWan NN score = %d\t", wanwan);
+      System.out.printf("Golbeck LT score= %d\n\n\n", golbeck);
+      
       }  /* main */
    }  /* class RunIPD */
 

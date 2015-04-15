@@ -2,15 +2,15 @@ Experiment ID                :IPDGoldbeck2
 Problem Type                 :IPDGoldbeck
 Data Input File Name         :NA
 Number of Runs               :10
-Generations per Run          :60
-Population Size              :100
+Generations per Run          :15
+Population Size              :50
 Selection Method (1)         :4
 Fitness Scaling Type (2)     :2
 Crossover Type (3)           :3
 Crossover Rate (4)           :0.8
 Mutation Type (5)            :1
 Mutation Rate (6)            :0.05
-Random Number Seed           :75982
+Random Number Seed           :759
 Number of Genes/Points (7)   :64
 Size of Genes (18)           :1
 

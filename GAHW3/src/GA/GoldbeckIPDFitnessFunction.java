@@ -45,7 +45,8 @@ public class GoldbeckIPDFitnessFunction extends FitnessFunction{
         }
         TreeMap<String,Integer> successTable = myStrategy.getSuccessTable();
         Integer successes[] = successTable.values().toArray(new Integer[0]);
-        for (int i = 0; i < Parameters.geneSize * Parameters.numGenes; i++ ){
+        for (int i = 0; i < Parameters.geneSize * Parameters.numGenes; i++ )
+        {
             rawFitness += successes[i];
         }
 //        StrategyTitForTat opponentStrategy1 = new StrategyTitForTat();
